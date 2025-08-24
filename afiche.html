@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partido Fútbol Sala - Sistema de Votación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 3.5em;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        
+        .match-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .team {
+            flex: 1;
+            min-width: 250px;
+            padding: 30px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .team:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .team-name {
+            font-size: 2em;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        .team.ctp .team-name {
+            background: linear-gradient(45deg, #3a3838, #000000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .team.liceo .team-name {
+            background: linear-gradient(45deg, #252424, #000000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .vs {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            color: #FFD700;
+            margin: 0 20px;
+        }
+        
+        .vote-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+        
+        .vote-title {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        
+        .vote-buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .vote-btn {
+            padding: 20px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-width: 200px;
+        }
+        
+        .vote-btn.ctp {
+            background: linear-gradient(45deg, #d1f8ff, #3282cd);
+            color: white;
+        }
+        
+        .vote-btn.liceo {
+            background: linear-gradient(45deg, #006eff, #3282cd);
+            color: white;
+        }
+        
+        .vote-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+        
+        .vote-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .result-bar {
+            margin: 15px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            overflow: hidden;
+            height: 50px;
+            position: relative;
+        }
+        
+        .result-fill {
+            height: 100%;
+            border-radius: 25px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .result-fill.ctp {
+            background: linear-gradient(45deg, #d1f8ff, #3282cd);
+        }
+        
+        .result-fill.liceo {
+            background: linear-gradient(45deg, #006eff, #3282cd);
+        }
+        
+        .result-text {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+        
+        .total-votes {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .match-details {
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            border-left: 5px solid #FFD700;
+        }
+        
+        .detail-item {
+            margin: 10px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .detail-label {
+            color: #FFD700;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            color: #FFD700;
+        }
+        
+        @media (max-width: 768px) {
+            .match-info {
+                flex-direction: column;
+            }
+            
+            .vs {
+                order: 2;
+                margin: 20px 0;
+            }
+            
+            .team {
+                min-width: 100%;
+            }
+            
+            .vote-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .vote-btn {
+                min-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">FÚTBOL SALA</div>
+            <div class="subtitle">Gran Partido Colegial</div>
+        </div>
+        
+        <div class="match-info">
+            <div class="team ctp">
+                <div class="team-name">CTP<br>Tronadora</div>
+            </div>
+            
+            <div class="vs">VS</div>
+            
+            <div class="team liceo">
+                <div class="team-name">Liceo<br>de Tilarán</div>
+        </div>
+        
+        <div class="vote-section">
+            <div class="vote-title">¿Quién Crees que Ganará?</div>
+            
+            <div class="vote-buttons">
+                <button class="vote-btn ctp" onclick="vote('ctp')">
+                    🏆 CTP Tronadora
+                </button>
+                <button class="vote-btn liceo" onclick="vote('liceo')">
+                    🏆 Liceo de Tilarán
+                </button>
+            </div>
+            
+            <div class="results">
+                <div class="result-bar">
+                    <div class="result-fill ctp" id="ctp-bar" style="width: 50%;">
+                        <span id="ctp-percentage">50%</span>
+                    </div>
+                    <div class="result-text">CTP Tronadora: <span id="ctp-votes">0</span> votos</div>
+                </div>
+                
+                <div class="result-bar">
+                    <div class="result-fill liceo" id="liceo-bar" style="width: 50%;">
+                        <span id="liceo-percentage">50%</span>
+                    </div>
+                    <div class="result-text">Liceo de Tilarán: <span id="liceo-votes">0</span> votos</div>
+                </div>
+                
+                <div class="total-votes">
+                    Total de votos: <span id="total-votes">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="match-details">
+            <div class="detail-item">
+                <span class="detail-label">📅 FECHA:</span> Viernes 29 de agosto 2025
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">🕖 HORA:</span> 8:20 AM
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">📍 LUGAR:</span> Gimnasio del Colegio Tecnio Profesional Tronadora
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">🎫 ENTRADA:</span> Estudiantes ₡500 (incluido la ropa particular)
+            </div>
+        </div>
+        
+        <div class="footer">
+            ¡Ven y Apoya a tu Equipo Favorito!
+        </div>
+    </div>
+
+    <script>
+        let votes = {
+            ctp: 0,
+            liceo: 0
+        };
+        
+        let userHasVoted = false;
+        
+        function vote(team) {
+            if (userHasVoted) {
+                alert('¡Ya has votado! Solo puedes votar una vez.');
+                return;
+            }
+            
+            votes[team]++;
+            userHasVoted = true;
+            updateResults();
+            
+            // Cambiar el texto del botón votado
+            document.querySelector(`.vote-btn.${team}`).innerHTML += ' ✓';
+            document.querySelector(`.vote-btn.${team}`).style.opacity = '0.8';
+            
+            // Mensaje de confirmación
+            const teamName = team === 'ctp' ? 'CTP Tronadora' : 'Liceo de Tilarán';
+            alert(`¡Gracias por votar por ${teamName}!`);
+        }
+        
+        function updateResults() {
+            const total = votes.ctp + votes.liceo;
+            
+            if (total === 0) {
+                return;
+            }
+            
+            const ctpPercentage = Math.round((votes.ctp / total) * 100);
+            const liceoPercentage = Math.round((votes.liceo / total) * 100);
+            
+            // Actualizar barras de progreso
+            document.getElementById('ctp-bar').style.width = ctpPercentage + '%';
+            document.getElementById('liceo-bar').style.width = liceoPercentage + '%';
+            
+            // Actualizar porcentajes
+            document.getElementById('ctp-percentage').textContent = ctpPercentage + '%';
+            document.getElementById('liceo-percentage').textContent = liceoPercentage + '%';
+            
+            // Actualizar contadores
+            document.getElementById('ctp-votes').textContent = votes.ctp;
+            document.getElementById('liceo-votes').textContent = votes.liceo;
+            document.getElementById('total-votes').textContent = total;
+        }
+        
+        // Inicializar resultados
+        updateResults();
+    </script>
+</body>
+</html>
